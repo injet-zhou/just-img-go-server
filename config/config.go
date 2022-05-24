@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"gopkg.in/ini.v1"
+	"strings"
 )
 
 const (
@@ -42,9 +43,10 @@ type COSCfg struct {
 
 // QiniuCfg 七牛云配置
 type QiniuCfg struct {
-	AccessKey string
-	SecretKey string
-	Bucket    string
+	AccessKey    string
+	SecretKey    string
+	Bucket       string
+	AccessDomain string
 }
 
 // UpyunCfg 又拍云配置
@@ -157,6 +159,9 @@ func GetCOSCfg() *COSCfg {
 }
 
 func GetQiniuCfg() *QiniuCfg {
+	if strings.Trim(qiniuCfg.AccessKey, " ") == "" {
+		return nil
+	}
 	return qiniuCfg
 }
 
