@@ -2,17 +2,17 @@ package config
 
 import (
 	"fmt"
+	"github.com/injet-zhou/just-img-go-server/tool"
 	"gopkg.in/ini.v1"
-	"strings"
 )
 
 const (
-	mysqlSection      = "mysql"
-	ossSection        = "oss"
-	cosSection        = "cos"
-	qiniuSection      = "qiniu"
-	upyunSection      = "upyun"
-	defaultConfigPath = "./env.ini"
+	mysqlSection = "mysql"
+	ossSection   = "oss"
+	cosSection   = "cos"
+	qiniuSection = "qiniu"
+	upyunSection = "upyun"
+	// defaultConfigPath = "./env.ini"
 )
 
 // MysqlCfg mysql配置
@@ -64,8 +64,13 @@ var (
 	upyunCfg *UpyunCfg
 )
 
-// initMysqlConfig 获取mysql配置
 // defaultConfigPath 配置文件路径
+func defaultConfigPath() string {
+	root := tool.GetProjectAbsPath()
+	return root + "/config/env.ini"
+}
+
+// initMysqlConfig 获取mysql配置
 func initMysqlConfig(cfg *ini.File) (*MysqlCfg, error) {
 	mysqlCfg = new(MysqlCfg)
 	mapErr := cfg.Section(mysqlSection).MapTo(mysqlCfg)
@@ -118,7 +123,7 @@ func warn(service string, err error) {
 
 func initConfig(configPath string) {
 	if configPath == "" {
-		configPath = defaultConfigPath
+		configPath = defaultConfigPath()
 	}
 	cfg, err := ini.Load(configPath)
 	if err != nil {
@@ -159,9 +164,6 @@ func GetCOSCfg() *COSCfg {
 }
 
 func GetQiniuCfg() *QiniuCfg {
-	if strings.Trim(qiniuCfg.AccessKey, " ") == "" {
-		return nil
-	}
 	return qiniuCfg
 }
 
