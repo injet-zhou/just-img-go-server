@@ -36,6 +36,14 @@ func NewClient(ossCfg *config.OSSCfg) (*oss.Client, error) {
 	return client, nil
 }
 
+func DefaultBucket() (*oss.Bucket, error) {
+	cfg := config.GetOSSCfg()
+	if cfg == nil {
+		return nil, fmt.Errorf("oss config is nil")
+	}
+	return Bucket(cfg.BucketName)
+}
+
 func Bucket(bucketName string) (*oss.Bucket, error) {
 	if client == nil {
 		return nil, fmt.Errorf("oss client is nil")

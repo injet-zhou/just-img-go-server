@@ -12,7 +12,16 @@ const (
 	cosSection   = "cos"
 	qiniuSection = "qiniu"
 	upyunSection = "upyun"
-	// defaultConfigPath = "./env.ini"
+)
+
+const (
+	DEV    = "dev"
+	PROD   = "prod"
+	ENVkEY = "JUST_IMG_GO_ENV"
+)
+
+const (
+	PORT = "7780"
 )
 
 // MysqlCfg mysql配置
