@@ -8,6 +8,10 @@ import (
 
 var client *oss.Client
 
+func init() {
+	client, _ = DefaultClient()
+}
+
 func DefaultClient() (*oss.Client, error) {
 	cfg := config.GetOSSCfg()
 	if cfg == nil {
