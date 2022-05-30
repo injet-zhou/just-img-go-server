@@ -3,29 +3,24 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/injet-zhou/just-img-go-server/pkg/oss"
+	"github.com/injet-zhou/just-img-go-server/config"
+	"github.com/injet-zhou/just-img-go-server/pkg/upload"
 )
 
 func UploadController(ctx *gin.Context) {
-	f, err := ctx.FormFile("file")
-	if err != nil {
-		ErrorResponse(ctx, 400, fmt.Errorf("upload file error: %s", err.Error()).Error())
+	platformType, ok := ctx.GetPostForm("platform")
+	if !ok {
+		ErrorResponse(ctx, 400, "platform is required")
+	}
+	num, parseErr := fmt.Sscanf(platformType, "%d", &platformType)
+	if num <= 0 || parseErr != nil {
+		ErrorResponse(ctx, 400, "platform is invalid")
+	}
+	uploader := upload.NewUploader(config.PlatformType(num))
+	res, uploadErr := uploader.Upload(ctx)
+	if uploadErr != nil {
+		ErrorResponse(ctx, 500, uploadErr.Error())
 		return
 	}
-	bucket, BucketErr := oss.DefaultBucket()
-	if BucketErr != nil {
-		ErrorResponse(ctx, 500, BucketErr.Error())
-		return
-	}
-	file, openErr := f.Open()
-	if openErr != nil {
-		ErrorResponse(ctx, 500, openErr.Error())
-		return
-	}
-	err = bucket.PutObject(f.Filename, file)
-	if err != nil {
-		ErrorResponse(ctx, 500, err.Error())
-		return
-	}
-	Success(ctx, "upload success", nil)
+	Success(ctx, "upload success", res)
 }

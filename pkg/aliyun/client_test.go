@@ -1,4 +1,4 @@
-package oss
+package aliyun
 
 import (
 	"github.com/injet-zhou/just-img-go-server/config"

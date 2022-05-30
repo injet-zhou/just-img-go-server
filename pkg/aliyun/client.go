@@ -1,8 +1,9 @@
-package oss
+package aliyun
 
 import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
 )
 
@@ -15,7 +16,7 @@ func init() {
 func DefaultClient() (*oss.Client, error) {
 	cfg := config.GetOSSCfg()
 	if cfg == nil {
-		return nil, fmt.Errorf("oss config is nil")
+		return nil, fmt.Errorf("aliyun config is nil")
 	}
 	return NewClient(cfg)
 }
@@ -40,17 +41,42 @@ func NewClient(ossCfg *config.OSSCfg) (*oss.Client, error) {
 	return client, nil
 }
 
+// DefaultBucket 获取默认配置bucket
 func DefaultBucket() (*oss.Bucket, error) {
 	cfg := config.GetOSSCfg()
 	if cfg == nil {
-		return nil, fmt.Errorf("oss config is nil")
+		return nil, fmt.Errorf("aliyun config is nil")
 	}
 	return Bucket(cfg.BucketName)
 }
 
 func Bucket(bucketName string) (*oss.Bucket, error) {
 	if client == nil {
-		return nil, fmt.Errorf("oss client is nil")
+		return nil, fmt.Errorf("aliyun client is nil")
 	}
 	return client.Bucket(bucketName)
+}
+
+type OSS struct {
+	Client *oss.Client
+}
+
+func (o *OSS) Upload(ctx *gin.Context) (string, error) {
+	f, err := ctx.FormFile("file")
+	if err != nil {
+		return "", err
+	}
+	bucket, BucketErr := DefaultBucket()
+	if BucketErr != nil {
+		return "", BucketErr
+	}
+	file, openErr := f.Open()
+	if openErr != nil {
+		return "", openErr
+	}
+	err = bucket.PutObject(f.Filename, file)
+	if err != nil {
+		return "", err
+	}
+	return "", nil
 }

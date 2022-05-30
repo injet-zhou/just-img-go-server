@@ -8,7 +8,7 @@ import (
 
 const (
 	mysqlSection = "mysql"
-	ossSection   = "oss"
+	ossSection   = "aliyun"
 	cosSection   = "cos"
 	qiniuSection = "qiniu"
 	upyunSection = "upyun"
@@ -22,6 +22,15 @@ const (
 
 const (
 	PORT = "7780"
+)
+
+type PlatformType int
+
+const (
+	OSS PlatformType = iota + 1
+	COS
+	QINIU
+	UPYUN
 )
 
 // MysqlCfg mysql配置
@@ -39,6 +48,7 @@ type OSSCfg struct {
 	AccessKeyId     string
 	AccessKeySecret string
 	BucketName      string
+	AccessDomain    string
 }
 
 // COSCfg 腾讯云COS配置
