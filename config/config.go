@@ -8,7 +8,7 @@ import (
 
 const (
 	mysqlSection = "mysql"
-	ossSection   = "aliyun"
+	ossSection   = "oss"
 	cosSection   = "cos"
 	qiniuSection = "qiniu"
 	upyunSection = "upyun"
@@ -31,6 +31,7 @@ const (
 	COS
 	QINIU
 	UPYUN
+	Local
 )
 
 // MysqlCfg mysql配置

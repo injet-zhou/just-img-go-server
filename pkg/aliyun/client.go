@@ -5,6 +5,7 @@ import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
+	"github.com/injet-zhou/just-img-go-server/tool"
 )
 
 var client *oss.Client
@@ -17,6 +18,9 @@ func DefaultClient() (*oss.Client, error) {
 	cfg := config.GetOSSCfg()
 	if cfg == nil {
 		return nil, fmt.Errorf("aliyun config is nil")
+	}
+	if tool.IsStructEmpty(cfg) {
+		return nil, fmt.Errorf("aliyun config is empty")
 	}
 	return NewClient(cfg)
 }
@@ -65,6 +69,12 @@ func (o *OSS) Upload(ctx *gin.Context) (string, error) {
 	f, err := ctx.FormFile("file")
 	if err != nil {
 		return "", err
+	}
+	if client == nil {
+		_, err = DefaultClient()
+		if err != nil {
+			return "", err
+		}
 	}
 	bucket, BucketErr := DefaultBucket()
 	if BucketErr != nil {

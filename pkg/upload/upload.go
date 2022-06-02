@@ -15,6 +15,8 @@ func NewUploader(platformType config.PlatformType) Uploader {
 	switch platformType {
 	case config.OSS:
 		return &aliyun.OSS{}
+	case config.Local:
+		return &local.Storage{}
 	default:
 		return &local.Storage{}
 	}
