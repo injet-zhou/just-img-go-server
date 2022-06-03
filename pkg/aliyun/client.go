@@ -5,6 +5,7 @@ import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
+	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/tool"
 )
 
@@ -66,10 +67,7 @@ type OSS struct {
 }
 
 func (o *OSS) Upload(ctx *gin.Context) (string, error) {
-	f, err := ctx.FormFile("file")
-	if err != nil {
-		return "", err
-	}
+	file, err := pkg.GetFile(ctx)
 	if client == nil {
 		_, err = DefaultClient()
 		if err != nil {
@@ -80,11 +78,7 @@ func (o *OSS) Upload(ctx *gin.Context) (string, error) {
 	if BucketErr != nil {
 		return "", BucketErr
 	}
-	file, openErr := f.Open()
-	if openErr != nil {
-		return "", openErr
-	}
-	err = bucket.PutObject(f.Filename, file)
+	err = bucket.PutObject(file.Name, *file.File)
 	if err != nil {
 		return "", err
 	}

@@ -55,10 +55,10 @@ type OSSCfg struct {
 // COSCfg 腾讯云COS配置
 type COSCfg struct {
 	Region    string
-	AppId     string
 	SecretId  string
 	SecretKey string
 	Bucket    string
+	BaseURL   string
 }
 
 // QiniuCfg 七牛云配置
