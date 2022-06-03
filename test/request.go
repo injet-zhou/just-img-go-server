@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/injet-zhou/just-img-go-server/internal/router"
 	"io/ioutil"
 	"net/http"
@@ -14,7 +15,12 @@ func PerformTestRequest(req *http.Request) ([]byte, error) {
 	r.ServeHTTP(w, req)
 
 	resp := w.Result()
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if closeErr != nil {
+			fmt.Printf("close response body error: %v\n", closeErr)
+		}
+	}()
 
 	data, err := ioutil.ReadAll(w.Body)
 	if err != nil {

@@ -16,3 +16,8 @@ type Image struct {
 	MD5          string `gorm:"type:varchar(100);not null"`
 	UploadIP     string `gorm:"type:varchar(32)"`
 }
+
+func (i *Image) Create(db *gorm.DB) (*Image, error) {
+	err := db.Create(&i).Error
+	return i, err
+}

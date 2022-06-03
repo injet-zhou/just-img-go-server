@@ -25,43 +25,40 @@ func TestIsStructEmpty(t *testing.T) {
 	type Quux struct {
 		Qux Qux
 	}
-	type Baza struct {
-		Bar Bar
-	}
 	str := ""
 	tests := []test{
-		test{
+		{
 			name: "empty struct",
 			in:   Foo{},
 			out:  true,
 		},
-		test{
+		{
 			name: "not empty struct",
 			in: Bar{
 				Name: "foo",
 			},
 			out: false,
 		},
-		test{
+		{
 			name: "empty struct pointer",
 			in:   new(Foo),
 			out:  true,
 		},
-		test{
+		{
 			name: "struct with empty struct",
 			in: Qux{
 				Foo: Foo{},
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty single string field struct",
 			in: Bar{
 				Name: "",
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty single int field struct",
 			in: struct {
 				Name int
@@ -70,7 +67,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty single float field struct",
 			in: struct {
 				Name float64
@@ -79,7 +76,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty single uint field struct",
 			in: struct {
 				Name uint
@@ -88,7 +85,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty single map field struct",
 			in: struct {
 				Name map[string]string
@@ -97,14 +94,14 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty single slice field struct",
 			in: &Baz{
 				Int32Slice: []int32{},
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty struct with nil map",
 			in: struct {
 				Name map[string]string
@@ -113,7 +110,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "empty struct with nil slice",
 			in: struct {
 				Name []string
@@ -122,7 +119,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "struct with slice which it's elements is empty struct",
 			in: struct {
 				Name []Foo
@@ -131,7 +128,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "struct embed struct which the embed struct is nil",
 			in: struct {
 				Name *Foo
@@ -140,7 +137,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "struct embed struct which the embed struct is empty",
 			in: struct {
 				Name *Quux
@@ -153,7 +150,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "struct embed struct pointer which the embed struct is empty",
 			in: struct {
 				Name *string
@@ -162,7 +159,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "struct with map which it's elements is empty string",
 			in: struct {
 				Name map[string]string
@@ -171,7 +168,7 @@ func TestIsStructEmpty(t *testing.T) {
 			},
 			out: true,
 		},
-		test{
+		{
 			name: "struct with map which it's elements is empty struct",
 			in: struct {
 				Name map[string]Foo
