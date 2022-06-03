@@ -3,9 +3,9 @@ package controller
 import "github.com/gin-gonic/gin"
 
 type Response struct {
-	Code       int    `json:"code"`
-	Msg        string `json:"msg"`
-	StatusCode int
+	Code       int           `json:"code"`
+	Msg        string        `json:"msg"`
+	StatusCode int           `json:"-"`
 	Content    []interface{} `json:"content,omitempty"`
 }
 
