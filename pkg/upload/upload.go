@@ -6,6 +6,8 @@ import (
 	"github.com/injet-zhou/just-img-go-server/pkg/aliyun"
 	"github.com/injet-zhou/just-img-go-server/pkg/cos"
 	"github.com/injet-zhou/just-img-go-server/pkg/local"
+	"github.com/injet-zhou/just-img-go-server/pkg/qiniu"
+	"github.com/injet-zhou/just-img-go-server/pkg/upyun"
 )
 
 type Uploader interface {
@@ -18,6 +20,10 @@ func NewUploader(platformType config.PlatformType) Uploader {
 		return &aliyun.OSS{}
 	case config.COS:
 		return &cos.COS{}
+	case config.QINIU:
+		return &qiniu.Qiniu{}
+	case config.UPYUN:
+		return &upyun.Upyun{}
 	case config.Local:
 		return &local.Storage{}
 	default:

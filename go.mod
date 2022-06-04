@@ -17,6 +17,7 @@ require (
 	github.com/stretchr/testify v1.7.1
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.35
 	github.com/ugorji/go v1.2.7 // indirect
+	github.com/upyun/go-sdk/v3 v3.0.2
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/time v0.0.0-20220411224347-583f2d630306 // indirect
