@@ -42,3 +42,8 @@ func NewDbEngine(cfg *config.MysqlCfg) (*gorm.DB, error) {
 	}
 	return db, nil
 }
+
+func DBSetup() error {
+	_, err := DefaultDB()
+	return err
+}

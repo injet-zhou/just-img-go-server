@@ -1,15 +1,24 @@
 package logger
 
 import (
+	"fmt"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/tool"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
+	"path"
+	"runtime"
 )
 
 var logger *zap.Logger
+
+func init() {
+	if logger == nil {
+		Default()
+	}
+}
 
 func getFileLogWriter(logFilePath string) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
@@ -21,6 +30,18 @@ func getFileLogWriter(logFilePath string) zapcore.WriteSyncer {
 	}
 
 	return zapcore.AddSync(lumberJackLogger)
+}
+
+func getCallerInfoForLog() (callerFields []zap.Field) {
+	pc, file, line, ok := runtime.Caller(2) // 回溯两层，拿到写日志的调用方的函数信息
+	if !ok {
+		return
+	}
+	funcName := runtime.FuncForPC(pc).Name()
+	funcName = path.Base(funcName) //Base函数返回路径的最后一个元素，只保留函数名
+
+	callerFields = append(callerFields, zap.String("func", funcName), zap.String("file", file), zap.Int("line", line))
+	return
 }
 
 func defaultLogWriter() zapcore.WriteSyncer {
@@ -38,17 +59,19 @@ func defaultLogWriter() zapcore.WriteSyncer {
 }
 
 func Default() *zap.Logger {
-	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	encoder := zapcore.NewJSONEncoder(encoderConfig)
+	if logger == nil {
+		encoderConfig := zap.NewProductionEncoderConfig()
+		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		encoder := zapcore.NewJSONEncoder(encoderConfig)
 
-	fileWriteSyncer := defaultLogWriter()
+		fileWriteSyncer := defaultLogWriter()
 
-	core := zapcore.NewTee(
-		zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
-		zapcore.NewCore(encoder, fileWriteSyncer, zapcore.DebugLevel),
-	)
-	logger = zap.New(core)
+		core := zapcore.NewTee(
+			zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
+			zapcore.NewCore(encoder, fileWriteSyncer, zapcore.DebugLevel),
+		)
+		logger = zap.New(core)
+	}
 	return logger
 }
 
@@ -72,4 +95,29 @@ func New(logFilePath string) *zap.Logger {
 	}
 
 	return zap.New(core)
+}
+
+func Info(message string, fields ...zap.Field) {
+	callerFields := getCallerInfoForLog()
+	fields = append(fields, callerFields...)
+	logger.Info(message, fields...)
+}
+
+func Debug(message string, fields ...zap.Field) {
+	callerFields := getCallerInfoForLog()
+	fields = append(fields, callerFields...)
+	logger.Debug(message, fields...)
+}
+
+func Error(message string, fields ...zap.Field) {
+	fmt.Println("enter error")
+	callerFields := getCallerInfoForLog()
+	fields = append(fields, callerFields...)
+	logger.Error(message, fields...)
+}
+
+func Warn(message string, fields ...zap.Field) {
+	callerFields := getCallerInfoForLog()
+	fields = append(fields, callerFields...)
+	logger.Warn(message, fields...)
 }
