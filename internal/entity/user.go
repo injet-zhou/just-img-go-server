@@ -1,6 +1,10 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+	"gorm.io/gorm"
+	"strings"
+)
 
 type User struct {
 	gorm.Model
@@ -18,9 +22,15 @@ type UserGroup struct {
 	IsAdmin bool
 }
 
-func (u *User) GetByUsername(db *gorm.DB, username string) (*User, error) {
+func (u *User) GetByUsername(db *gorm.DB) (*User, error) {
+	if strings.Trim(u.Username, " ") == "" {
+		return nil, fmt.Errorf("username is required")
+	}
+	if db == nil {
+		return nil, fmt.Errorf("db is required")
+	}
 	var user User
-	err := db.Where("username = ?", username).First(&user).Error
+	err := db.Where("username = ?", u.Username).First(&user).Error
 	if err != nil {
 		return nil, err
 	}

@@ -9,11 +9,11 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-var DbEngine *gorm.DB
+var DBEngine *gorm.DB
 
 func DefaultDB() (*gorm.DB, error) {
-	if DbEngine != nil {
-		return DbEngine, nil
+	if DBEngine != nil {
+		return DBEngine, nil
 	}
 	cfg := config.GetMysqlCfg()
 	if cfg == nil {
@@ -26,7 +26,7 @@ func DefaultDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	DbEngine = db
+	DBEngine = db
 	return db, nil
 }
 

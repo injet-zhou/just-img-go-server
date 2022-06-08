@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/injet-zhou/just-img-go-server/global"
 	"github.com/injet-zhou/just-img-go-server/internal/entity"
-	"github.com/injet-zhou/just-img-go-server/tool"
 )
 
 type LoginRequest struct {
@@ -13,16 +13,15 @@ type LoginRequest struct {
 	Email    string `json:"email"`
 }
 
-func Login(ctx *gin.Context) (*entity.User, error) {
+func Login(ctx *gin.Context, req *LoginRequest) (*entity.User, error) {
 	user := &entity.User{}
-	req := &LoginRequest{}
-	if err := ctx.ShouldBindJSON(req); err != nil {
-		return nil, err
-	}
-	req = tool.TrimFields(req).(*LoginRequest)
 	if req.Username == "" && req.Email == "" {
 		return nil, fmt.Errorf("username or email is required")
 	}
-
+	var err error
+	user, err = user.GetByUsername(global.DBEngine)
+	if err != nil {
+		return nil, err
+	}
 	return user, nil
 }
