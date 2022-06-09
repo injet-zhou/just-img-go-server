@@ -36,3 +36,18 @@ func (u *User) GetByUsername(db *gorm.DB) (*User, error) {
 	}
 	return &user, nil
 }
+
+func (u *User) GetByEmail(db *gorm.DB) (*User, error) {
+	if strings.Trim(u.Email, " ") == "" {
+		return nil, fmt.Errorf("email is required")
+	}
+	if db == nil {
+		return nil, fmt.Errorf("db is required")
+	}
+	var user User
+	err := db.Where("email = ?", u.Email).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
