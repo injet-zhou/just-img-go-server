@@ -2,6 +2,7 @@ package global
 
 import (
 	"fmt"
+	"github.com/go-redis/redis/v9"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/tool"
 	"gorm.io/driver/mysql"
@@ -10,6 +11,7 @@ import (
 )
 
 var DBEngine *gorm.DB
+var RedisEngine *redis.Client
 
 func DefaultDB() (*gorm.DB, error) {
 	if DBEngine != nil {
