@@ -34,6 +34,10 @@ const (
 	Local
 )
 
+const (
+	MAX_LOGIN_FAIL_COUNT = 5
+)
+
 // MysqlCfg mysql配置
 type MysqlCfg struct {
 	Host     string

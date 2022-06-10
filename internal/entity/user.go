@@ -16,10 +16,30 @@ type User struct {
 	Nickname string `gorm:"type:varchar(100)"`
 }
 
+type SafeUser struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Nickname string `json:"nickname"`
+	Avatar   string `json:"avatar"`
+	UserId   uint   `json:"userId"`
+	GroupId  uint   `json:"groupId"`
+}
+
 type UserGroup struct {
 	gorm.Model
 	Name    string `gorm:"type:varchar(100);not null"`
 	IsAdmin bool
+}
+
+func (u *User) SafeInfo() *SafeUser {
+	return &SafeUser{
+		Username: u.Username,
+		Email:    u.Email,
+		Nickname: u.Nickname,
+		Avatar:   u.Avatar,
+		UserId:   u.ID,
+		GroupId:  u.GroupId,
+	}
 }
 
 func (u *User) GetByUsername(db *gorm.DB) (*User, error) {
