@@ -12,30 +12,7 @@ const (
 	cosSection   = "cos"
 	qiniuSection = "qiniu"
 	upyunSection = "upyun"
-)
-
-const (
-	DEV    = "dev"
-	PROD   = "prod"
-	ENVkEY = "JUST_IMG_GO_ENV"
-)
-
-const (
-	PORT = "7780"
-)
-
-type PlatformType int
-
-const (
-	OSS PlatformType = iota + 1
-	COS
-	QINIU
-	UPYUN
-	Local
-)
-
-const (
-	MAX_LOGIN_FAIL_COUNT = 5
+	redisSection = "redis"
 )
 
 // MysqlCfg mysql配置
@@ -45,6 +22,15 @@ type MysqlCfg struct {
 	User     string
 	Password string
 	Database string
+}
+
+// RedisCfg redis配置
+type RedisCfg struct {
+	Host     string
+	Port     int
+	Password string
+	Username string
+	DB       int
 }
 
 // OSSCfg 阿里云OSS配置
@@ -86,6 +72,7 @@ var (
 	cosCfg   *COSCfg
 	qiniuCfg *QiniuCfg
 	upyunCfg *UpyunCfg
+	redisCfg *RedisCfg
 )
 
 // defaultConfigPath 配置文件路径
@@ -102,6 +89,15 @@ func initMysqlConfig(cfg *ini.File) (*MysqlCfg, error) {
 		return nil, mapErr
 	}
 	return mysqlCfg, nil
+}
+
+func initRedisConfig(cfg *ini.File) (*RedisCfg, error) {
+	redisCfg = new(RedisCfg)
+	mapErr := cfg.Section(redisSection).MapTo(redisCfg)
+	if mapErr != nil {
+		return nil, mapErr
+	}
+	return redisCfg, nil
 }
 
 func initOSSCfg(cfg *ini.File) (*OSSCfg, error) {
@@ -173,10 +169,18 @@ func initConfig(configPath string) {
 	if err != nil {
 		warn(qiniuSection, err)
 	}
+	redisCfg, err = initRedisConfig(cfg)
+	if err != nil {
+		warn("redis", err)
+	}
 }
 
 func GetMysqlCfg() *MysqlCfg {
 	return mysqlCfg
+}
+
+func GetRedisCfg() *RedisCfg {
+	return redisCfg
 }
 
 func GetOSSCfg() *OSSCfg {
