@@ -15,57 +15,6 @@ const (
 	redisSection = "redis"
 )
 
-// MysqlCfg mysql配置
-type MysqlCfg struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Database string
-}
-
-// RedisCfg redis配置
-type RedisCfg struct {
-	Host     string
-	Port     int
-	Password string
-	Username string
-	DB       int
-}
-
-// OSSCfg 阿里云OSS配置
-type OSSCfg struct {
-	Endpoint        string
-	AccessKeyId     string
-	AccessKeySecret string
-	BucketName      string
-	AccessDomain    string
-}
-
-// COSCfg 腾讯云COS配置
-type COSCfg struct {
-	Region    string
-	SecretId  string
-	SecretKey string
-	Bucket    string
-	BaseURL   string
-}
-
-// QiniuCfg 七牛云配置
-type QiniuCfg struct {
-	AccessKey    string
-	SecretKey    string
-	Bucket       string
-	AccessDomain string
-}
-
-// UpyunCfg 又拍云配置
-type UpyunCfg struct {
-	Bucket   string
-	Operator string
-	Password string
-}
-
 var (
 	mysqlCfg *MysqlCfg
 	ossCfg   *OSSCfg
@@ -79,61 +28,6 @@ var (
 func defaultConfigPath() string {
 	root := tool.GetProjectAbsPath()
 	return root + "/config/env.ini"
-}
-
-// initMysqlConfig 获取mysql配置
-func initMysqlConfig(cfg *ini.File) (*MysqlCfg, error) {
-	mysqlCfg = new(MysqlCfg)
-	mapErr := cfg.Section(mysqlSection).MapTo(mysqlCfg)
-	if mapErr != nil {
-		return nil, mapErr
-	}
-	return mysqlCfg, nil
-}
-
-func initRedisConfig(cfg *ini.File) (*RedisCfg, error) {
-	redisCfg = new(RedisCfg)
-	mapErr := cfg.Section(redisSection).MapTo(redisCfg)
-	if mapErr != nil {
-		return nil, mapErr
-	}
-	return redisCfg, nil
-}
-
-func initOSSCfg(cfg *ini.File) (*OSSCfg, error) {
-	ossCfg = new(OSSCfg)
-	mapErr := cfg.Section(ossSection).MapTo(ossCfg)
-	if mapErr != nil {
-		return nil, mapErr
-	}
-	return ossCfg, nil
-}
-
-func initCOSCfg(cfg *ini.File) (*COSCfg, error) {
-	cosCfg = new(COSCfg)
-	mapErr := cfg.Section(cosSection).MapTo(cosCfg)
-	if mapErr != nil {
-		return nil, mapErr
-	}
-	return cosCfg, nil
-}
-
-func initQiniuCfg(cfg *ini.File) (*QiniuCfg, error) {
-	qiniuCfg = new(QiniuCfg)
-	mapErr := cfg.Section(qiniuSection).MapTo(qiniuCfg)
-	if mapErr != nil {
-		return nil, mapErr
-	}
-	return qiniuCfg, nil
-}
-
-func initUpyunCfg(cfg *ini.File) (*UpyunCfg, error) {
-	upyunCfg = new(UpyunCfg)
-	mapErr := cfg.Section(upyunSection).MapTo(upyunCfg)
-	if mapErr != nil {
-		return nil, mapErr
-	}
-	return upyunCfg, nil
 }
 
 func warn(service string, err error) {
@@ -173,30 +67,6 @@ func initConfig(configPath string) {
 	if err != nil {
 		warn("redis", err)
 	}
-}
-
-func GetMysqlCfg() *MysqlCfg {
-	return mysqlCfg
-}
-
-func GetRedisCfg() *RedisCfg {
-	return redisCfg
-}
-
-func GetOSSCfg() *OSSCfg {
-	return ossCfg
-}
-
-func GetCOSCfg() *COSCfg {
-	return cosCfg
-}
-
-func GetQiniuCfg() *QiniuCfg {
-	return qiniuCfg
-}
-
-func GetUpyunCfg() *UpyunCfg {
-	return upyunCfg
 }
 
 func init() {
