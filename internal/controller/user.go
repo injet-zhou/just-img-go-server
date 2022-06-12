@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/injet-zhou/just-img-go-server/internal/errcode"
 	"github.com/injet-zhou/just-img-go-server/internal/pb"
 	"github.com/injet-zhou/just-img-go-server/internal/service"
 	"github.com/injet-zhou/just-img-go-server/tool"
@@ -21,7 +22,24 @@ func Login(ctx *gin.Context) {
 	loginReq = tool.TrimFields(loginReq).(*service.LoginRequest)
 	user, err := service.Login(ctx, loginReq)
 	if err != nil {
-		ErrorResponse(ctx, 500, err.Error())
+		newErr := err.(*errcode.Error)
+		if newErr.Code == errcode.ErrWrongUsername || newErr.Code == errcode.ErrWrongPassword {
+			ErrorResponse(ctx, 400, newErr.Msg)
+			return
+		}
+		if newErr.Code == errcode.ErrLoginFailTooManyTimes {
+			ErrorResponse(ctx, 403, newErr.Msg)
+			return
+		}
+		if newErr.Code == errcode.ErrUserNameOrEmailRequired {
+			ErrorResponse(ctx, 400, newErr.Msg)
+			return
+		}
+		if newErr.Code == errcode.ErrUserNotExist {
+			ErrorResponse(ctx, 404, newErr.Msg)
+			return
+		}
+		ErrorResponse(ctx, 500, newErr.Msg)
 		return
 	}
 	safeUser := user.SafeInfo()

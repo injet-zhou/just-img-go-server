@@ -1,7 +1,10 @@
 package errcode
 
 const (
-	OK               = 0
 	ErrWrongPassword = iota + 1001
+	ErrUserNameOrEmailRequired
 	ErrWrongUsername
+	ErrLoginFailTooManyTimes
+	ErrUserNotExist
+	DBErr
 )

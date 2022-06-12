@@ -5,18 +5,18 @@ import (
 )
 
 type Error struct {
-	code  int
-	msg   string
-	extra []string
+	Code  int
+	Msg   string
+	Extra []string
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("错误码：%d，错误信息：%s", e.code, e.msg)
+	return fmt.Sprintf("错误码：%d，错误信息：%s", e.Code, e.Msg)
 }
 
 func NewError(code int, msg string) *Error {
 	return &Error{
-		code: code,
-		msg:  msg,
+		Code: code,
+		Msg:  msg,
 	}
 }

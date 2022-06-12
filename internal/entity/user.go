@@ -2,6 +2,8 @@ package entity
 
 import (
 	"fmt"
+	"github.com/injet-zhou/just-img-go-server/tool"
+	"github.com/rs/xid"
 	"gorm.io/gorm"
 	"strings"
 )
@@ -14,6 +16,7 @@ type User struct {
 	GroupId  uint   `gorm:"not null"`
 	Avatar   string `gorm:"type:varchar(255)"`
 	Nickname string `gorm:"type:varchar(100)"`
+	UID      string `gorm:"type:varchar(100)"`
 }
 
 type SafeUser struct {
@@ -23,12 +26,20 @@ type SafeUser struct {
 	Avatar   string `json:"avatar"`
 	UserId   uint   `json:"userId"`
 	GroupId  uint   `json:"groupId"`
+	Token    string `json:"token"`
 }
 
 type UserGroup struct {
 	gorm.Model
 	Name    string `gorm:"type:varchar(100);not null"`
 	IsAdmin bool
+}
+
+func (u *User) BeforeCreate(db *gorm.DB) (err error) {
+	guid := xid.New()
+	u.UID = guid.String()
+	u.Password = tool.MD5(u.Password + u.UID)
+	return nil
 }
 
 func (u *User) SafeInfo() *SafeUser {

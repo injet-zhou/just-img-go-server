@@ -22,4 +22,6 @@ const (
 
 const (
 	MAX_LOGIN_FAIL_COUNT = 5
+	USER_SESSION_KEY     = "USK_"
+	TOKEN_EXPIRE_TIME    = 3 * 60 * 60
 )
