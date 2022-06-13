@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/injet-zhou/just-img-go-server/internal/app"
 	"github.com/injet-zhou/just-img-go-server/internal/errcode"
 	"github.com/injet-zhou/just-img-go-server/internal/pb"
 	"github.com/injet-zhou/just-img-go-server/internal/service"
@@ -43,5 +44,11 @@ func Login(ctx *gin.Context) {
 		return
 	}
 	safeUser := user.SafeInfo()
+	token, err := app.GenToken(user)
+	if err != nil {
+		ErrorResponse(ctx, 500, err.Error())
+		return
+	}
+	safeUser.Token = token
 	Success(ctx, "login success", safeUser)
 }

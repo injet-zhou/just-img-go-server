@@ -7,4 +7,6 @@ const (
 	ErrLoginFailTooManyTimes
 	ErrUserNotExist
 	DBErr
+	ErrTokenUnauthorized
+	ErrTokenExpired
 )

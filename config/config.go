@@ -22,7 +22,22 @@ var (
 	qiniuCfg *QiniuCfg
 	upyunCfg *UpyunCfg
 	redisCfg *RedisCfg
+	jwtCfg   *JwtCfg
 )
+
+type JwtCfg struct {
+	Secret string
+	Expire int64
+}
+
+func initJwtCfg(cfg *ini.File) (*JwtCfg, error) {
+	jwtCfg = new(JwtCfg)
+	mapErr := cfg.Section("jwt").MapTo(jwtCfg)
+	if mapErr != nil {
+		return nil, mapErr
+	}
+	return jwtCfg, nil
+}
 
 // defaultConfigPath 配置文件路径
 func defaultConfigPath() string {
@@ -67,6 +82,14 @@ func initConfig(configPath string) {
 	if err != nil {
 		warn("redis", err)
 	}
+	jwtCfg, err = initJwtCfg(cfg)
+	if err != nil {
+		warn("jwt", err)
+	}
+}
+
+func GetJwtCfg() *JwtCfg {
+	return jwtCfg
 }
 
 func init() {
