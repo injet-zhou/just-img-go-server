@@ -5,9 +5,9 @@ import (
 	"github.com/injet-zhou/just-img-go-server/internal/controller"
 )
 
-func uploadRouter(r *gin.RouterGroup) {
-	v1 := r.Group("/v1")
+func userRouter(router *gin.RouterGroup) {
+	user := router.Group("/user")
 	{
-		v1.POST("/upload", controller.UploadController)
+		user.POST("/login", controller.Login)
 	}
 }

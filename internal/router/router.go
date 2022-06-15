@@ -17,6 +17,8 @@ func RouteSetup() *gin.Engine {
 	r.HandleMethodNotAllowed = true
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
-	uploadRouter(api)
+	v1 := api.Group("/v1")
+	fileRouter(v1)
+	userRouter(v1)
 	return r
 }
