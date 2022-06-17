@@ -52,3 +52,7 @@ func Login(ctx *gin.Context) {
 	safeUser.Token = token
 	Success(ctx, "login success", safeUser)
 }
+
+func Register(c *gin.Context) {
+
+}
