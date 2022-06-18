@@ -15,13 +15,13 @@ import (
 	"strings"
 )
 
-type LoginRequest struct {
+type AuthRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password" binding:"required"`
 	Email    string `json:"email"`
 }
 
-func Login(ctx *gin.Context, req *LoginRequest) (*entity.User, error) {
+func Login(ctx *gin.Context, req *AuthRequest) (*entity.User, error) {
 	user := &entity.User{}
 	if req.Username == "" && req.Email == "" {
 		return nil, errcode.NewError(errcode.ErrUserNameOrEmailRequired, "username or email is required")
@@ -58,6 +58,38 @@ func Login(ctx *gin.Context, req *LoginRequest) (*entity.User, error) {
 			}
 		}
 		return nil, errcode.NewError(errcode.ErrWrongPassword, "密码错误")
+	}
+	return user, nil
+}
+
+func Register(ctx *gin.Context, req *AuthRequest) (*entity.User, error) {
+	user := &entity.User{}
+	log := logger.Default()
+	if req.Username == "" && req.Email == "" {
+		return nil, errcode.NewError(errcode.ErrUserNameOrEmailRequired, "username is required")
+	}
+	if req.Password == "" {
+		return nil, errcode.NewError(errcode.ErrPasswordRequired, "password is required")
+	}
+	user.Email = req.Email
+	user.Username = req.Username
+	var err error
+	user, err = user.GetByLoginName(global.DBEngine)
+	isLoginNameExist := false
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Error("get user by login name error", zap.String("err", err.Error()))
+			return nil, errcode.NewError(errcode.DBErr, err.Error())
+		}
+		isLoginNameExist = true
+	}
+	if isLoginNameExist {
+		return nil, errcode.NewError(errcode.ErrLoginNameExist, "用户名已存在")
+	}
+	createErr := user.Create(global.DBEngine)
+	if createErr != nil {
+		log.Error("create user error", zap.String("err", createErr.Error()))
+		return nil, errcode.NewError(errcode.DBErr, createErr.Error())
 	}
 	return user, nil
 }

@@ -9,5 +9,6 @@ func userRouter(router *gin.RouterGroup) {
 	user := router.Group("/user")
 	{
 		user.POST("/login", controller.Login)
+		user.POST("/register", controller.Register)
 	}
 }

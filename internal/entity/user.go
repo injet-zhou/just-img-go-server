@@ -79,3 +79,10 @@ func (u *User) GetByLoginName(db *gorm.DB) (*User, error) {
 	}
 	return &user, nil
 }
+
+func (u *User) Create(db *gorm.DB) error {
+	if db == nil {
+		return fmt.Errorf("db is required")
+	}
+	return db.Create(u).Error
+}
