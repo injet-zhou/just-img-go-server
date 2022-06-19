@@ -21,7 +21,7 @@ func UploadController(ctx *gin.Context) {
 		ErrorResponse(ctx, 400, "platform is invalid")
 		return
 	}
-	uploader := upload.NewUploader(config.Local)
+	uploader := upload.NewUploader(config.PlatformType(num))
 	res, uploadErr := uploader.Upload(ctx)
 	if uploadErr != nil {
 		ErrorResponse(ctx, 500, uploadErr.Error())

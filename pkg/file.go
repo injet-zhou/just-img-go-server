@@ -8,6 +8,10 @@ import (
 type File struct {
 	File *multipart.File
 	Name string
+	Size int64
+	Type string
+	URL  string
+	Path string
 }
 
 func GetFile(ctx *gin.Context) (*File, error) {
@@ -23,5 +27,7 @@ func GetFile(ctx *gin.Context) (*File, error) {
 	return &File{
 		File: &file,
 		Name: filename,
+		Size: f.Size,
+		Type: f.Header.Get("Content-Type"),
 	}, nil
 }
