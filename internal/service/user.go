@@ -73,19 +73,23 @@ func Register(ctx *gin.Context, req *AuthRequest) (*entity.User, error) {
 	}
 	user.Email = req.Email
 	user.Username = req.Username
-	var err error
-	user, err = user.GetByLoginName(global.DBEngine)
+	user.Password = req.Password
+	userEntity, err := user.GetByLoginName(global.DBEngine)
 	isLoginNameExist := false
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Error("get user by login name error", zap.String("err", err.Error()))
 			return nil, errcode.NewError(errcode.DBErr, err.Error())
 		}
+	}
+	if userEntity != nil && userEntity.ID > 0 {
 		isLoginNameExist = true
 	}
 	if isLoginNameExist {
 		return nil, errcode.NewError(errcode.ErrLoginNameExist, "用户名已存在")
 	}
+	//userDao := &dao.UserDao{}
+	//createErr := userDao.Create(user)
 	createErr := user.Create(global.DBEngine)
 	if createErr != nil {
 		log.Error("create user error", zap.String("err", createErr.Error()))
@@ -96,5 +100,6 @@ func Register(ctx *gin.Context, req *AuthRequest) (*entity.User, error) {
 
 // PasswordValidate 检查密码
 func PasswordValidate(password, dbPassword, UID string) bool {
-	return strings.Compare(dbPassword, tool.MD5(password+UID)) == 0
+	psw := tool.MD5(password + UID)
+	return strings.Compare(dbPassword, psw) == 0
 }

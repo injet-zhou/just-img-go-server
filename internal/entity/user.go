@@ -73,7 +73,13 @@ func (u *User) GetByLoginName(db *gorm.DB) (*User, error) {
 		return nil, fmt.Errorf("db is required")
 	}
 	var user User
-	err := db.Where("username = ? or email = ?", u.Username, u.Email).First(&user).Error
+	if u.Username != "" {
+		db = db.Where("username = ?", u.Username)
+	}
+	if u.Email != "" {
+		db = db.Where("email = ?", u.Email)
+	}
+	err := db.First(&user).Error
 	if err != nil {
 		return nil, err
 	}

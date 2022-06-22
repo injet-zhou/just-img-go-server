@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/global"
+	"github.com/injet-zhou/just-img-go-server/internal/entity"
 	"github.com/injet-zhou/just-img-go-server/internal/router"
 	"log"
 )
@@ -12,7 +13,10 @@ func init() {
 	if err != nil {
 		log.Fatal("db setup error: ", err)
 	}
-
+	setupTblErr := entity.InitTables(global.DBEngine)
+	if setupTblErr != nil {
+		log.Fatal("init tables error: ", setupTblErr)
+	}
 }
 
 func main() {

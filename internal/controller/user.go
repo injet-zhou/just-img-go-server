@@ -67,8 +67,8 @@ func Login(ctx *gin.Context) {
 }
 
 func Register(c *gin.Context) {
-	var req *pb.RegisterRequest
-	if err := bindParams(c, &req, "register"); err != nil {
+	req := &pb.RegisterRequest{}
+	if err := bindParams(c, req, "register"); err != nil {
 		return
 	}
 	registerReq := &service.AuthRequest{

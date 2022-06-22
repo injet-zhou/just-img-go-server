@@ -16,9 +16,9 @@ func TestMD5(t *testing.T) {
 		{
 			name: "md5",
 			args: args{
-				msg: "hello",
+				msg: "123456" + "capi91nt10f5j95umsvg",
 			},
-			want: "5d41402abc4b2a76b9719d911017c592",
+			want: "4df4eeb0879e2b89cb606bb5d6319a83",
 		},
 	}
 	for _, tt := range tests {
