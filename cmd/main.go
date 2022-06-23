@@ -17,6 +17,10 @@ func init() {
 	if setupTblErr != nil {
 		log.Fatal("init tables error: ", setupTblErr)
 	}
+	createAdminUserErr := entity.CreateAdminUser()
+	if createAdminUserErr != nil {
+		log.Fatal("create admin user error: ", createAdminUserErr)
+	}
 }
 
 func main() {

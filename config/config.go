@@ -16,18 +16,33 @@ const (
 )
 
 var (
-	mysqlCfg *MysqlCfg
-	ossCfg   *OSSCfg
-	cosCfg   *COSCfg
-	qiniuCfg *QiniuCfg
-	upyunCfg *UpyunCfg
-	redisCfg *RedisCfg
-	jwtCfg   *JwtCfg
+	mysqlCfg   *MysqlCfg
+	ossCfg     *OSSCfg
+	cosCfg     *COSCfg
+	qiniuCfg   *QiniuCfg
+	upyunCfg   *UpyunCfg
+	redisCfg   *RedisCfg
+	jwtCfg     *JwtCfg
+	accountCfg *AccountCfg
 )
 
 type JwtCfg struct {
 	Secret string
 	Expire int64
+}
+
+type AccountCfg struct {
+	Username string
+	Password string
+}
+
+func initAccountCfg(cfg *ini.File) (*AccountCfg, error) {
+	accountCfg = new(AccountCfg)
+	mapErr := cfg.Section("account").MapTo(accountCfg)
+	if mapErr != nil {
+		return nil, mapErr
+	}
+	return accountCfg, nil
 }
 
 func initJwtCfg(cfg *ini.File) (*JwtCfg, error) {
@@ -62,34 +77,49 @@ func initConfig(configPath string) {
 	if err != nil {
 		warn(mysqlSection, err)
 	}
-	ossCfg, err = initOSSCfg(cfg)
-	if err != nil {
+	var ossErr error
+	ossCfg, ossErr = initOSSCfg(cfg)
+	if ossErr != nil {
 		warn(ossSection, err)
 	}
-	cosCfg, err = initCOSCfg(cfg)
-	if err != nil {
+	var cosErr error
+	cosCfg, cosErr = initCOSCfg(cfg)
+	if cosErr != nil {
 		warn(cosSection, err)
 	}
-	qiniuCfg, err = initQiniuCfg(cfg)
-	if err != nil {
+	var qiniuErr error
+	qiniuCfg, qiniuErr = initQiniuCfg(cfg)
+	if qiniuErr != nil {
 		warn(qiniuSection, err)
 	}
-	upyunCfg, err = initUpyunCfg(cfg)
-	if err != nil {
+	var upyunErr error
+	upyunCfg, upyunErr = initUpyunCfg(cfg)
+	if upyunErr != nil {
 		warn(qiniuSection, err)
 	}
-	redisCfg, err = initRedisConfig(cfg)
-	if err != nil {
+	var redisErr error
+	redisCfg, redisErr = initRedisConfig(cfg)
+	if redisErr != nil {
 		warn("redis", err)
 	}
-	jwtCfg, err = initJwtCfg(cfg)
-	if err != nil {
+	var jwtErr error
+	jwtCfg, jwtErr = initJwtCfg(cfg)
+	if jwtErr != nil {
 		warn("jwt", err)
+	}
+	var accountErr error
+	accountCfg, err = initAccountCfg(cfg)
+	if accountErr != nil {
+		warn("account", err)
 	}
 }
 
 func GetJwtCfg() *JwtCfg {
 	return jwtCfg
+}
+
+func GetAccountCfg() *AccountCfg {
+	return accountCfg
 }
 
 func init() {
