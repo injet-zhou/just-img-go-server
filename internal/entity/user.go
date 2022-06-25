@@ -31,8 +31,9 @@ type SafeUser struct {
 
 type UserGroup struct {
 	gorm.Model
-	Name    string `gorm:"type:varchar(100);not null"`
-	IsAdmin bool
+	Name      string `gorm:"type:varchar(100);not null"`
+	IsAdmin   bool
+	IsDefault bool
 }
 
 func (u *User) BeforeCreate(db *gorm.DB) (err error) {

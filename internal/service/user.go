@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/global"
+	"github.com/injet-zhou/just-img-go-server/internal/dao"
 	"github.com/injet-zhou/just-img-go-server/internal/entity"
 	"github.com/injet-zhou/just-img-go-server/internal/errcode"
 	"github.com/injet-zhou/just-img-go-server/pkg/logger"
@@ -88,8 +89,12 @@ func Register(ctx *gin.Context, req *AuthRequest) (*entity.User, error) {
 	if isLoginNameExist {
 		return nil, errcode.NewError(errcode.ErrLoginNameExist, "用户名已存在")
 	}
-	//userDao := &dao.UserDao{}
-	//createErr := userDao.Create(user)
+	defaultGroup, groupErr := dao.DefaultUserGroup(global.DBEngine)
+	if groupErr != nil {
+		log.Error("get default user group error", zap.String("err", groupErr.Error()))
+		return nil, errcode.NewError(errcode.DBErr, groupErr.Error())
+	}
+	user.GroupId = defaultGroup.ID
 	createErr := user.Create(global.DBEngine)
 	if createErr != nil {
 		log.Error("create user error", zap.String("err", createErr.Error()))
