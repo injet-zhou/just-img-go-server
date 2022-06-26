@@ -1,8 +1,8 @@
 package upload
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
+	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/pkg/aliyun"
 	"github.com/injet-zhou/just-img-go-server/pkg/cos"
 	"github.com/injet-zhou/just-img-go-server/pkg/local"
@@ -11,7 +11,7 @@ import (
 )
 
 type Uploader interface {
-	Upload(ctx *gin.Context) (string, error)
+	Upload(file *pkg.File) (string, error)
 }
 
 func NewUploader(platformType config.PlatformType) Uploader {

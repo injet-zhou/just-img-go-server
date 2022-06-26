@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
+	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/pkg/logger"
 	"github.com/injet-zhou/just-img-go-server/pkg/upload"
 	"go.uber.org/zap"
@@ -22,7 +23,13 @@ func UploadController(ctx *gin.Context) {
 		return
 	}
 	uploader := upload.NewUploader(config.PlatformType(num))
-	res, uploadErr := uploader.Upload(ctx)
+	file, err := pkg.GetFile(ctx)
+	if err != nil {
+		logger.Error("get file error", zap.String("err", err.Error()))
+		ErrorResponse(ctx, 400, err.Error())
+		return
+	}
+	res, uploadErr := uploader.Upload(file)
 	if uploadErr != nil {
 		ErrorResponse(ctx, 500, uploadErr.Error())
 		return

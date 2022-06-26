@@ -3,7 +3,6 @@ package aliyun
 import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/tool"
@@ -66,8 +65,8 @@ type OSS struct {
 	Client *oss.Client
 }
 
-func (o *OSS) Upload(ctx *gin.Context) (string, error) {
-	file, err := pkg.GetFile(ctx)
+func (o *OSS) Upload(file *pkg.File) (string, error) {
+	var err error
 	if client == nil {
 		_, err = DefaultClient()
 		if err != nil {

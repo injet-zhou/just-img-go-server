@@ -3,7 +3,6 @@ package cos
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/tool"
@@ -51,15 +50,10 @@ func NewClient(cfg *config.COSCfg) (*cos.Client, error) {
 	return client, nil
 }
 
-func (c *COS) Upload(ctx *gin.Context) (string, error) {
+func (c *COS) Upload(file *pkg.File) (string, error) {
 	if client == nil {
 		return "", fmt.Errorf("tencent cos client is nil")
 	}
-	file, err := pkg.GetFile(ctx)
-	if err != nil {
-		return "", err
-	}
-
 	res, err := client.Object.Put(context.Background(), file.Name, *file.File, nil)
 	if err != nil {
 		return "", err

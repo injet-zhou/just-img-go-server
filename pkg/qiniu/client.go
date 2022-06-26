@@ -3,8 +3,8 @@ package qiniu
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
+	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/tool"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
@@ -13,7 +13,7 @@ import (
 type Qiniu struct {
 }
 
-func (q *Qiniu) Upload(ctx *gin.Context) (string, error) {
+func (q *Qiniu) Upload(file *pkg.File) (string, error) {
 	cfg := config.GetQiniuCfg()
 	if cfg == nil {
 		return "", fmt.Errorf("qiniu config is not set")
@@ -38,18 +38,8 @@ func (q *Qiniu) Upload(ctx *gin.Context) (string, error) {
 	putExtra := storage.PutExtra{
 		Params: map[string]string{},
 	}
-	file, err := ctx.FormFile("file")
-	if err != nil {
-		return "", err
-	}
-	fileName := file.Filename
-	f, openErr := file.Open()
-	if openErr != nil {
-		return "", openErr
-	}
-	data := []byte("hello, this is qiniu cloud")
-	dataLen := int64(len(data))
-	uploadErr := formUploader.Put(context.Background(), &ret, upToken, fileName, f, dataLen, &putExtra)
+	var err error
+	uploadErr := formUploader.Put(context.Background(), &ret, upToken, file.Name, *file.File, file.Size, &putExtra)
 	if err != nil {
 		fmt.Println(uploadErr)
 		return "", uploadErr

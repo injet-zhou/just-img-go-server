@@ -2,7 +2,6 @@ package upyun
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/tool"
@@ -41,11 +40,7 @@ func NewClient(cfg *config.UpyunCfg) (*upyun.UpYun, error) {
 type Upyun struct {
 }
 
-func (u *Upyun) Upload(ctx *gin.Context) (string, error) {
-	file, err := pkg.GetFile(ctx)
-	if err != nil {
-		return "", err
-	}
+func (u *Upyun) Upload(file *pkg.File) (string, error) {
 	up, err := DefaultClient()
 	if err != nil {
 		return "", err
