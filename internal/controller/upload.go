@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
+	"github.com/injet-zhou/just-img-go-server/internal/entity"
+	"github.com/injet-zhou/just-img-go-server/internal/service"
 	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/pkg/logger"
 	"github.com/injet-zhou/just-img-go-server/pkg/upload"
@@ -11,6 +13,7 @@ import (
 )
 
 func UploadController(ctx *gin.Context) {
+	user := ctx.Keys["user"].(*entity.User)
 	platformType, ok := ctx.GetPostForm("platform")
 	if !ok {
 		ErrorResponse(ctx, 400, "platform is required")
@@ -32,6 +35,16 @@ func UploadController(ctx *gin.Context) {
 	res, uploadErr := uploader.Upload(file)
 	if uploadErr != nil {
 		ErrorResponse(ctx, 500, uploadErr.Error())
+		return
+	}
+	uploadInfo := &service.UploadInfo{
+		File: file,
+		User: user,
+		IP:   ctx.ClientIP(),
+	}
+	if saveErr := service.SaveUploadInfo(uploadInfo); saveErr != nil {
+		logger.Error("save upload info error", zap.String("err", saveErr.Error()))
+		ErrorResponse(ctx, 500, saveErr.Error())
 		return
 	}
 	Success(ctx, "upload success", res)
