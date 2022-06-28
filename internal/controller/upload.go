@@ -13,7 +13,7 @@ import (
 )
 
 func UploadController(ctx *gin.Context) {
-	user := ctx.Keys["user"].(*entity.User)
+	user := ctx.Keys["User"].(*entity.User)
 	platformType, ok := ctx.GetPostForm("platform")
 	if !ok {
 		ErrorResponse(ctx, 400, "platform is required")
@@ -32,7 +32,7 @@ func UploadController(ctx *gin.Context) {
 		ErrorResponse(ctx, 400, err.Error())
 		return
 	}
-	res, uploadErr := uploader.Upload(file)
+	_, uploadErr := uploader.Upload(file)
 	if uploadErr != nil {
 		ErrorResponse(ctx, 500, uploadErr.Error())
 		return
@@ -47,5 +47,5 @@ func UploadController(ctx *gin.Context) {
 		ErrorResponse(ctx, 500, saveErr.Error())
 		return
 	}
-	Success(ctx, "upload success", res)
+	Success(ctx, "upload success", file.URL)
 }

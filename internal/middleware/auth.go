@@ -6,9 +6,12 @@ import (
 	"github.com/injet-zhou/just-img-go-server/internal/app"
 	"github.com/injet-zhou/just-img-go-server/internal/dao"
 	"github.com/injet-zhou/just-img-go-server/internal/errcode"
+	"github.com/injet-zhou/just-img-go-server/pkg/logger"
+	"go.uber.org/zap"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
+	log := logger.Default()
 	return func(c *gin.Context) {
 		var token string
 		token = c.GetHeader("Authorization")
@@ -21,6 +24,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		claims, err := app.ParseToken(token)
 		if err != nil {
+			log.Error("parse token error", zap.String("err", err.Error()))
 			switch err.(*jwt.ValidationError).Errors {
 			case jwt.ValidationErrorExpired:
 				c.JSON(401, gin.H{

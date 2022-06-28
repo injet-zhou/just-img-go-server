@@ -46,7 +46,7 @@ func GetFile(ctx *gin.Context) (*File, error) {
 		File:         &file,
 		OriginalName: filename,
 		Size:         f.Size,
-		Type:         f.Header.Get("Content-Type"),
+		Type:         f.Header.Get("Data-Type"),
 		Path:         path(),
 		Name:         newFilename(filename),
 	}, nil
