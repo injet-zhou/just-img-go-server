@@ -19,7 +19,7 @@ func RouteSetup() *gin.Engine {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
 	userRouter(v1)
-	v1.Use(middleware.AuthMiddleware())
+	ConfigRouter(v1)
 	fileRouter(v1)
 	return r
 }
