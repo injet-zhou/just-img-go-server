@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/internal/entity"
@@ -10,16 +9,21 @@ import (
 	"github.com/injet-zhou/just-img-go-server/pkg/logger"
 	"github.com/injet-zhou/just-img-go-server/pkg/upload"
 	"go.uber.org/zap"
+	"strconv"
 )
 
 func UploadController(ctx *gin.Context) {
+	if ctx.Keys["User"] == nil {
+		ErrorResponse(ctx, 401, "unauthorized")
+		return
+	}
 	user := ctx.Keys["User"].(*entity.User)
 	platformType, ok := ctx.GetPostForm("platform")
 	if !ok {
 		ErrorResponse(ctx, 400, "platform is required")
 		return
 	}
-	num, parseErr := fmt.Sscanf(platformType, "%d", &platformType)
+	num, parseErr := strconv.ParseInt(platformType, 10, 64)
 	if num <= 0 || parseErr != nil {
 		logger.Error("platform is invalid", zap.String("platform", platformType))
 		ErrorResponse(ctx, 400, "platform is invalid")

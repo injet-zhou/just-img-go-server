@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/pkg"
+	"github.com/injet-zhou/just-img-go-server/pkg/logger"
 	"github.com/injet-zhou/just-img-go-server/tool"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
+	"go.uber.org/zap"
+	"strings"
 )
 
 type Qiniu struct {
 }
 
 func (q *Qiniu) Upload(file *pkg.File) (string, error) {
+	log := logger.Default()
 	cfg := config.GetQiniuCfg()
 	if cfg == nil {
 		return "", fmt.Errorf("qiniu config is not set")
@@ -39,10 +43,19 @@ func (q *Qiniu) Upload(file *pkg.File) (string, error) {
 		Params: map[string]string{},
 	}
 	var err error
-	uploadErr := formUploader.Put(context.Background(), &ret, upToken, file.Name, *file.File, file.Size, &putExtra)
+	filename := file.Path + file.Name
+	uploadErr := formUploader.Put(context.Background(), &ret, upToken, filename, *file.File, file.Size, &putExtra)
 	if err != nil {
-		fmt.Println(uploadErr)
+		log.Error("upload file error:", zap.String("err", err.Error()))
 		return "", uploadErr
 	}
-	return ret.Key, nil
+	url := ""
+	if cfg.AccessDomain != "" {
+		if strings.HasSuffix(cfg.AccessDomain, "/") {
+			url = cfg.AccessDomain + filename
+		} else {
+			url = cfg.AccessDomain + "/" + filename
+		}
+	}
+	return url, nil
 }
