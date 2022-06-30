@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 var client *cos.Client
@@ -54,7 +55,8 @@ func (c *COS) Upload(file *pkg.File) (string, error) {
 	if client == nil {
 		return "", fmt.Errorf("tencent cos client is nil")
 	}
-	res, err := client.Object.Put(context.Background(), file.Name, *file.File, nil)
+	filename := file.Path + file.Name
+	res, err := client.Object.Put(context.Background(), filename, *file.File, nil)
 	if err != nil {
 		return "", err
 	}
@@ -69,5 +71,12 @@ func (c *COS) Upload(file *pkg.File) (string, error) {
 		return "", readErr
 	}
 	fmt.Printf("%s\n", body)
-	return "", nil
+	URL := ""
+	if cfg := config.GetCOSCfg(); cfg != nil {
+		if cfg.BaseURL == "" {
+			return URL, nil
+		}
+		URL = strings.TrimRight(cfg.BaseURL, "/") + "/" + filename
+	}
+	return URL, nil
 }

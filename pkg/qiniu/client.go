@@ -50,11 +50,11 @@ func (q *Qiniu) Upload(file *pkg.File) (string, error) {
 		return "", uploadErr
 	}
 	url := ""
-	if cfg.AccessDomain != "" {
-		if strings.HasSuffix(cfg.AccessDomain, "/") {
-			url = cfg.AccessDomain + filename
+	if cfg.BaseURL != "" {
+		if strings.HasSuffix(cfg.BaseURL, "/") {
+			url = cfg.BaseURL + filename
 		} else {
-			url = cfg.AccessDomain + "/" + filename
+			url = cfg.BaseURL + "/" + filename
 		}
 	}
 	return url, nil

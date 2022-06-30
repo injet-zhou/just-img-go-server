@@ -36,11 +36,12 @@ func UploadController(ctx *gin.Context) {
 		ErrorResponse(ctx, 400, err.Error())
 		return
 	}
-	_, uploadErr := uploader.Upload(file)
+	URL, uploadErr := uploader.Upload(file)
 	if uploadErr != nil {
 		ErrorResponse(ctx, 500, uploadErr.Error())
 		return
 	}
+	file.URL = URL
 	uploadInfo := &service.UploadInfo{
 		File: file,
 		User: user,

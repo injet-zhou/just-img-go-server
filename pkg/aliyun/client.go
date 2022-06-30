@@ -6,6 +6,7 @@ import (
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/tool"
+	"strings"
 )
 
 var client *oss.Client
@@ -77,9 +78,17 @@ func (o *OSS) Upload(file *pkg.File) (string, error) {
 	if BucketErr != nil {
 		return "", BucketErr
 	}
-	err = bucket.PutObject(file.Name, *file.File)
+	filename := file.Path + file.Name
+	err = bucket.PutObject(filename, *file.File)
 	if err != nil {
 		return "", err
 	}
-	return "", nil
+	URL := ""
+	if cfg := config.GetOSSCfg(); cfg != nil {
+		if cfg.BaseURL == "" {
+			return URL, nil
+		}
+		URL = strings.TrimRight(cfg.BaseURL, "/") + "/" + filename
+	}
+	return URL, nil
 }

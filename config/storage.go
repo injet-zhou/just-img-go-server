@@ -8,7 +8,7 @@ type OSSCfg struct {
 	AccessKeyId     string
 	AccessKeySecret string
 	BucketName      string
-	AccessDomain    string
+	BaseURL         string
 }
 
 // COSCfg 腾讯云COS配置
@@ -22,10 +22,10 @@ type COSCfg struct {
 
 // QiniuCfg 七牛云配置
 type QiniuCfg struct {
-	AccessKey    string
-	SecretKey    string
-	Bucket       string
-	AccessDomain string
+	AccessKey string
+	SecretKey string
+	Bucket    string
+	BaseURL   string
 }
 
 // UpyunCfg 又拍云配置
@@ -33,6 +33,7 @@ type UpyunCfg struct {
 	Bucket   string
 	Operator string
 	Password string
+	BaseURL  string
 }
 
 func initOSSCfg(cfg *ini.File) (*OSSCfg, error) {
