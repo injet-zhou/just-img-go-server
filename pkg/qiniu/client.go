@@ -45,7 +45,7 @@ func (q *Qiniu) Upload(file *pkg.File) (string, error) {
 	var err error
 	filename := file.Path + file.Name
 	uploadErr := formUploader.Put(context.Background(), &ret, upToken, filename, *file.File, file.Size, &putExtra)
-	if err != nil {
+	if uploadErr != nil {
 		log.Error("upload file error:", zap.String("err", err.Error()))
 		return "", uploadErr
 	}

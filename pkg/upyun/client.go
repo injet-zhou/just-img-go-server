@@ -6,6 +6,7 @@ import (
 	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/tool"
 	"github.com/upyun/go-sdk/v3/upyun"
+	"strings"
 )
 
 var client *upyun.UpYun
@@ -52,5 +53,14 @@ func (u *Upyun) Upload(file *pkg.File) (string, error) {
 	if uploadErr != nil {
 		return "", uploadErr
 	}
-	return "", nil
+	cfg := config.GetUpyunCfg()
+	url := ""
+	if cfg.BaseURL != "" {
+		if strings.HasSuffix(cfg.BaseURL, "/") {
+			url = cfg.BaseURL + file.Name
+		} else {
+			url = cfg.BaseURL + "/" + file.Name
+		}
+	}
+	return url, nil
 }
