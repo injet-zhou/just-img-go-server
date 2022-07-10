@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/injet-zhou/just-img-go-server/config"
 	"github.com/injet-zhou/just-img-go-server/pkg"
+	"github.com/injet-zhou/just-img-go-server/pkg/logger"
 	"github.com/injet-zhou/just-img-go-server/tool"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"github.com/tencentyun/cos-go-sdk-v5/debug"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -22,10 +24,10 @@ type COS struct {
 func DefaultClient() (*cos.Client, error) {
 	cfg := config.GetCOSCfg()
 	if cfg == nil {
-		return nil, fmt.Errorf("aliyun config is nil")
+		return nil, fmt.Errorf("cos config is nil")
 	}
 	if tool.IsStructEmpty(cfg) {
-		return nil, fmt.Errorf("aliyun config is empty")
+		return nil, fmt.Errorf("cos config is empty")
 	}
 	return NewClient(cfg)
 }
@@ -51,7 +53,25 @@ func NewClient(cfg *config.COSCfg) (*cos.Client, error) {
 	return client, nil
 }
 
+func checkClient() error {
+	if client == nil {
+		var err error
+		client, err = DefaultClient()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return nil
+}
+
 func (c *COS) Upload(file *pkg.File) (string, error) {
+	log := logger.Default()
+	initErr := checkClient()
+	if initErr != nil {
+		log.Error("init cos client error: ", zap.String("error", initErr.Error()))
+		return "", initErr
+	}
 	if client == nil {
 		return "", fmt.Errorf("tencent cos client is nil")
 	}

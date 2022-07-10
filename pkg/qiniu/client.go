@@ -32,7 +32,7 @@ func (q *Qiniu) Upload(file *pkg.File) (string, error) {
 	upToken := putPolicy.UploadToken(mac)
 	conf := storage.Config{}
 	// 空间对应的机房
-	conf.Zone = &storage.ZoneHuadong
+	conf.Zone = &storage.ZoneHuabei
 	// 是否使用https域名
 	conf.UseHTTPS = true
 	// 上传是否使用CDN上传加速
@@ -42,11 +42,10 @@ func (q *Qiniu) Upload(file *pkg.File) (string, error) {
 	putExtra := storage.PutExtra{
 		Params: map[string]string{},
 	}
-	var err error
 	filename := file.Path + file.Name
 	uploadErr := formUploader.Put(context.Background(), &ret, upToken, filename, *file.File, file.Size, &putExtra)
 	if uploadErr != nil {
-		log.Error("upload file error:", zap.String("err", err.Error()))
+		log.Error("upload file error:", zap.String("err", uploadErr.Error()))
 		return "", uploadErr
 	}
 	url := ""
