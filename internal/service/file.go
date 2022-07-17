@@ -32,6 +32,7 @@ func SaveUploadInfo(uploadInfo *UploadInfo) error {
 		URL:          uploadInfo.File.URL,
 		UploadIP:     uploadInfo.IP,
 		OriginalName: uploadInfo.File.OriginalName,
+		GroupId:      uploadInfo.User.GroupId,
 	}
 	_, err := img.Create(global.DBEngine)
 	if err != nil {
