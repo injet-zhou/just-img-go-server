@@ -15,7 +15,7 @@ func bindParams(c *gin.Context, params interface{}, module string) error {
 	log := logger.Default()
 	if err := c.Bind(params); err != nil {
 		log.Error("bind params error", zap.String("err", err.Error()), zap.String("module", module))
-		ErrorResponse(c, 400, err.Error())
+		Error(c, 400, err.Error())
 		return err
 	}
 	return nil
@@ -36,30 +36,14 @@ func Login(ctx *gin.Context) {
 	user, err := service.Login(ctx, loginReq)
 	if err != nil {
 		newErr := err.(*errcode.Error)
-		if newErr.Code == errcode.ErrWrongUsername || newErr.Code == errcode.ErrWrongPassword {
-			ErrorResponse(ctx, 400, newErr.Msg)
-			return
-		}
-		if newErr.Code == errcode.ErrLoginFailTooManyTimes {
-			ErrorResponse(ctx, 403, newErr.Msg)
-			return
-		}
-		if newErr.Code == errcode.ErrUserNameOrEmailRequired {
-			ErrorResponse(ctx, 400, newErr.Msg)
-			return
-		}
-		if newErr.Code == errcode.ErrUserNotExist {
-			ErrorResponse(ctx, 404, newErr.Msg)
-			return
-		}
-		ErrorResponse(ctx, 500, newErr.Msg)
+		ErrorResponse(ctx, newErr, newErr.Msg)
 		return
 	}
 	safeUser := user.SafeInfo()
 	token, err := app.GenToken(user)
 	if err != nil {
 		log.Error("generate token error", zap.String("err", err.Error()))
-		ErrorResponse(ctx, 500, err.Error())
+		Error(ctx, 500, err.Error())
 		return
 	}
 	safeUser.Token = token
@@ -80,26 +64,14 @@ func Register(c *gin.Context) {
 	user, err := service.Register(c, registerReq)
 	if err != nil {
 		newErr := err.(*errcode.Error)
-		if newErr.Code == errcode.ErrUserNameOrEmailRequired {
-			ErrorResponse(c, 400, newErr.Msg)
-			return
-		}
-		if newErr.Code == errcode.ErrLoginNameExist {
-			ErrorResponse(c, 400, newErr.Msg)
-			return
-		}
-		if newErr.Code == errcode.ErrPasswordRequired {
-			ErrorResponse(c, 400, newErr.Msg)
-			return
-		}
-		ErrorResponse(c, 500, newErr.Msg)
+		ErrorResponse(c, newErr, newErr.Msg)
 		return
 	}
 	safeUser := user.SafeInfo()
 	token, err := app.GenToken(user)
 	if err != nil {
 		logger.Default().Error("generate token error", zap.String("err", err.Error()))
-		ErrorResponse(c, 500, err.Error())
+		Error(c, 500, err.Error())
 		return
 	}
 	safeUser.Token = token
