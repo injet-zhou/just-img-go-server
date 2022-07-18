@@ -6,17 +6,17 @@ import (
 )
 
 type Dao struct {
-	engine *gorm.DB
+	Engine *gorm.DB
 }
 
 func New(engine *gorm.DB) *Dao {
 	return &Dao{
-		engine: engine,
+		Engine: engine,
 	}
 }
 
 func Default() *Dao {
 	return &Dao{
-		engine: global.DBEngine,
+		Engine: global.DBEngine,
 	}
 }

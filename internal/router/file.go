@@ -11,5 +11,6 @@ func fileRouter(r *gin.RouterGroup) {
 	{
 		v1.Use(middleware.AuthMiddleware())
 		v1.POST("/upload", controller.UploadController)
+		v1.POST("/image/list", controller.ImageListController)
 	}
 }
