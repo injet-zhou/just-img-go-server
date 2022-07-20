@@ -42,7 +42,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		c.Set("UserId", claims.UserId)
 		c.Set("UserName", claims.Username)
-		user, _ := dao.GetUserById(claims.UserId)
+		user, _ := dao.GetUser(claims.UserId)
 		c.Set("User", user)
 		c.Next()
 	}
