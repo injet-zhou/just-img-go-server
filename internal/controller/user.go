@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/injet-zhou/just-img-go-server/internal/app"
+	"github.com/injet-zhou/just-img-go-server/internal/dao"
 	"github.com/injet-zhou/just-img-go-server/internal/errcode"
 	"github.com/injet-zhou/just-img-go-server/internal/pb"
 	"github.com/injet-zhou/just-img-go-server/internal/service"
@@ -76,4 +77,12 @@ func Register(c *gin.Context) {
 	}
 	safeUser.Token = token
 	Success(c, "register success", safeUser)
+}
+
+func UserListController(ctx *gin.Context) {
+	user := ctx.Keys["User"].(*dao.TokenUser)
+	if !user.IsAdmin {
+		Error(ctx, 403, "forbidden")
+		return
+	}
 }

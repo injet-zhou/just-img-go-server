@@ -42,7 +42,15 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		c.Set("UserId", claims.UserId)
 		c.Set("UserName", claims.Username)
-		user, _ := dao.GetUser(claims.UserId)
+		user, findUserErr := dao.GetUser(claims.UserId)
+		if findUserErr != nil {
+			log.Error("get user error", zap.String("err", findUserErr.Error()))
+			c.JSON(401, gin.H{
+				"code":    errcode.ErrTokenUnauthorized,
+				"message": "token is invalid",
+			})
+			return
+		}
 		c.Set("User", user)
 		c.Next()
 	}
