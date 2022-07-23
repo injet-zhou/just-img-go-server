@@ -85,4 +85,14 @@ func UserListController(ctx *gin.Context) {
 		Error(ctx, 403, "forbidden")
 		return
 	}
+	req := new(service.UsersRequest)
+	if err := ctx.ShouldBindJSON(req); err != nil {
+		Error(ctx, 400, err.Error())
+		return
+	}
+	paginator, err := service.UserList(req)
+	if err != nil {
+		Error(ctx, 500, err.Error())
+	}
+	Success(ctx, "success", paginator)
 }

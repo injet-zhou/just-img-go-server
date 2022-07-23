@@ -9,6 +9,7 @@ import (
 	"github.com/injet-zhou/just-img-go-server/internal/dao"
 	"github.com/injet-zhou/just-img-go-server/internal/entity"
 	"github.com/injet-zhou/just-img-go-server/internal/errcode"
+	"github.com/injet-zhou/just-img-go-server/pkg"
 	"github.com/injet-zhou/just-img-go-server/pkg/logger"
 	"github.com/injet-zhou/just-img-go-server/tool"
 	"go.uber.org/zap"
@@ -107,4 +108,62 @@ func Register(ctx *gin.Context, req *AuthRequest) (*entity.User, error) {
 func PasswordValidate(password, dbPassword, UID string) bool {
 	psw := tool.MD5(password + UID)
 	return strings.Compare(dbPassword, psw) == 0
+}
+
+type UsersRequest struct {
+	Page           int    `json:"page"`
+	Limit          int    `json:"limit"`
+	Username       string `json:"username"`
+	Email          string `json:"email"`
+	GroupName      string `json:"groupName"`
+	CreatedAtStart string `json:"createdAtStart"`
+	CreatedAtEnd   string `json:"createdAtEnd"`
+	UID            string `json:"uid"`
+	Nickname       string `json:"nickname"`
+}
+
+func UserList(req *UsersRequest) (*pkg.Pagination, error) {
+	if req == nil {
+		return nil, errcode.NewError(errcode.ErrInvalidParams, "invalid params")
+	}
+	db := global.DBEngine.Model(&entity.User{})
+	db = db.Select("user.id,user.username,user.email,user.group_id,user.created_at,user.updated_at,user.uid,user.nickname,user.avatar,user_group.name as group_name")
+	db = db.Joins("left join user_group on user.group_id = user_group.id")
+	if req.Username != "" {
+		db = db.Where("user.username like ?", "'%"+req.Username+"'")
+	}
+	if req.Email != "" {
+		db = db.Where("user.email like ?", "'%"+req.Email+"'")
+	}
+	if req.GroupName != "" {
+		db = db.Where("user_group.name like ?", "'%"+req.GroupName+"'")
+	}
+	dateStart := tool.DateStr2Timestamp(req.CreatedAtStart)
+	dateEnd := tool.DateStr2Timestamp(req.CreatedAtEnd)
+	if dateStart != 0 && dateEnd != 0 && dateStart > dateEnd {
+		return nil, errcode.NewError(errcode.ErrInvalidParams, "date start must less than date end")
+	}
+	if req.CreatedAtStart != "" {
+		db = db.Where("user.created_at >= ?", req.CreatedAtStart)
+	}
+	if req.CreatedAtEnd != "" {
+		db = db.Where("user.created_at <= ?", req.CreatedAtEnd)
+	}
+	if req.UID != "" {
+		db = db.Where("user.uid like ?", "'%"+req.UID+"'")
+	}
+	if req.Nickname != "" {
+		db = db.Where("user.nickname like ?", "'%"+req.Nickname+"'")
+	}
+	paginator := &pkg.Pagination{
+		Page:  req.Page,
+		Limit: req.Limit,
+	}
+	db = db.Scopes(pkg.Paginate(paginator, db))
+	users, err := dao.GetUsers(db)
+	if err != nil {
+		return nil, errcode.NewError(errcode.DBErr, err.Error())
+	}
+	paginator.Rows = users
+	return paginator, nil
 }

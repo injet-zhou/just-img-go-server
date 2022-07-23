@@ -11,4 +11,5 @@ const (
 	ErrTokenExpired
 	ErrPasswordRequired
 	ErrLoginNameExist
+	ErrInvalidParams
 )

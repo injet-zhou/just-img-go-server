@@ -10,7 +10,7 @@ type Pagination struct {
 	Page       int         `json:"page,omitempty;query:page"`
 	TotalRows  int64       `json:"totalRows,omitempty"`
 	TotalPages int         `json:"totalPages,omitempty"`
-	Rows       interface{} `json:"rows"`
+	Rows       interface{} `json:"rows,omitempty"`
 }
 
 func (p *Pagination) GetOffset() int {

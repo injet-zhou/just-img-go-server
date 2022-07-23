@@ -43,3 +43,24 @@ func DefaultUserGroup(db *gorm.DB) (*entity.UserGroup, error) {
 	}
 	return userGroup, nil
 }
+
+type User struct {
+	gorm.Model
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	GroupId   uint   `json:"groupId"`
+	Avatar    string `json:"avatar"`
+	Nickname  string `json:"nickname"`
+	UID       string `json:"uid"`
+	GroupName string `json:"groupName"`
+	IsAdmin   bool   `json:"isAdmin"`
+	IsDefault bool   `json:"IsDefault"`
+}
+
+func GetUsers(db *gorm.DB) ([]*User, error) {
+	var users []*User
+	if err := db.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
