@@ -5,6 +5,7 @@ import (
 )
 
 type ImagesResponse struct {
+	ID           uint   `json:"id"`
 	UserId       uint   `json:"userId"`
 	Name         string `json:"name"`
 	Path         string `json:"path"`

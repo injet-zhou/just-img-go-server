@@ -24,3 +24,10 @@ func TrimFields(s interface{}) interface{} {
 	}
 	return s
 }
+
+func LikeQueryWrapper(field string) string {
+	if field == "" {
+		return ""
+	}
+	return field + "%"
+}

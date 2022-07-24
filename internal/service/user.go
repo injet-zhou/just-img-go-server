@@ -129,14 +129,15 @@ func UserList(req *UsersRequest) (*pkg.Pagination, error) {
 	db := global.DBEngine.Model(&entity.User{})
 	db = db.Select("user.id,user.username,user.email,user.group_id,user.created_at,user.updated_at,user.uid,user.nickname,user.avatar,user_group.name as group_name")
 	db = db.Joins("left join user_group on user.group_id = user_group.id")
+	likeWrapper := tool.LikeQueryWrapper
 	if req.Username != "" {
-		db = db.Where("user.username like ?", "'%"+req.Username+"'")
+		db = db.Where("user.username like ?", likeWrapper(req.Username))
 	}
 	if req.Email != "" {
-		db = db.Where("user.email like ?", "'%"+req.Email+"'")
+		db = db.Where("user.email like ?", likeWrapper(req.Email))
 	}
 	if req.GroupName != "" {
-		db = db.Where("user_group.name like ?", "'%"+req.GroupName+"'")
+		db = db.Where("user_group.name like ?", likeWrapper(req.GroupName))
 	}
 	dateStart := tool.DateStr2Timestamp(req.CreatedAtStart)
 	dateEnd := tool.DateStr2Timestamp(req.CreatedAtEnd)

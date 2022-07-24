@@ -6,6 +6,7 @@ import (
 	DAO "github.com/injet-zhou/just-img-go-server/internal/dao"
 	"github.com/injet-zhou/just-img-go-server/internal/entity"
 	"github.com/injet-zhou/just-img-go-server/pkg"
+	"github.com/injet-zhou/just-img-go-server/tool"
 )
 
 type ImagesRequest struct {
@@ -57,21 +58,22 @@ func ImageList(req *ImagesRequest) ([]*DAO.ImagesResponse, error) {
 		Limit: req.Limit,
 		Page:  req.Page,
 	}
-	db := global.DBEngine.Model(&entity.Image{})
+	db := global.DBEngine.Model(&entity.Image{}).Debug()
 	db = db.Select("image.id, image.name, image.path, image.size, image.original_name, image.mime_type, image.url, image.md5, image.upload_ip, user.username, user_group.name as group_name")
 	db = db.Joins("left join user on user.id = image.user_id")
 	db = db.Joins("left join user_group on user_group.id = image.group_id")
+	likeWrapper := tool.LikeQueryWrapper
 	if req.Username != "" {
-		db = db.Where("user.username = ?", req.Username)
+		db = db.Where("user.username like ?", likeWrapper(req.Username))
 	}
 	if req.GroupName != "" {
-		db = db.Where("user_group.name = ?", req.GroupName)
+		db = db.Where("user_group.name like ?", likeWrapper(req.GroupName))
 	}
 	if req.OriginalName != "" {
-		db = db.Where("image.original_name = ?", req.OriginalName)
+		db = db.Where("image.original_name like ?", likeWrapper(req.OriginalName))
 	}
 	if req.UploadIP != "" {
-		db = db.Where("image.upload_ip = ?", req.UploadIP)
+		db = db.Where("image.upload_ip like ?", likeWrapper(req.UploadIP))
 	}
 	dao := &DAO.Dao{
 		Engine: db,
